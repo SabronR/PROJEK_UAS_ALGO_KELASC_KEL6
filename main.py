@@ -1,57 +1,72 @@
-from Model import Lagu
-from bst import BinarySearchTree
-from queue import Queue
-from stack import Stack
-from max_heap import MaxHeap
+
+from integrasisitem import MusicStreamingApp
 
 if __name__ == "__main__":
-    # Inisialisasi struktur data
-    katalog_bst = BinarySearchTree()
-    antrean_user_queue = Queue()
-    prioritas_putar_heap = MaxHeap()
-    riwayat_stack = Stack()
+    app = MusicStreamingApp()
 
-    daftar_lagu = [
-       Lagu("L001", "Hati-Hati di Jalan", "Tulus", "Manusia", "Pop", "4:02"),
-        Lagu("L002", "Sial", "Mahalini", "Fabula", "Pop", "4:15"),
-    ]
-    for lagu in daftar_lagu:
-        katalog_bst.insert(lagu)
+    app.tambah_lagu_ke_katalog("L001", "Hati-Hati di Jalan", "Tulus", "Manusia", "Pop", "4:02")
+    app.tambah_lagu_ke_katalog("L002", "Sial", "Mahalini", "Single", "Pop", "4:15")
+    app.tambah_lagu_ke_katalog("L003", "Monokrom", "Tulus", "Monokrom", "Pop", "3:40")
+    app.tambah_lagu_ke_katalog("L004", "Komang", "Raim Laode", "Single", "Pop", "3:42")
 
-    print("=== SIMULASI STREAMING MUSIK ===")
-    # User request masuk ke antrian
-    print("\n[+] User melakukan request pemutaran lagu...")
-    antrean_user_queue.enqueue(daftar_lagu[0], is_premium=False) # Hati-Hati di Jalan
-    antrean_user_queue.enqueue(daftar_lagu[1], is_premium=True)  # Sial
-    antrean_user_queue.display()
-
-    # 4. Sistem memproses Queue dan memasukkan ke Heap berdasarkan prioritas
-    print("\n[+] Sistem memproses antrean ke sistem prioritas (Heap)...")
-    while not antrean_user_queue.is_empty():
-        lagu_req, is_premium = antrean_user_queue.dequeue()
-
-        lagu_valid = katalog_bst.search(lagu_req.judul)
-        if lagu_valid:
-            # Hitung prioritas
-            skor = 100 if is_premium else 50
-            prioritas_putar_heap.insert(lagu_valid, skor)
-
-    prioritas_putar_heap.display()
-
-    # 5. Sistem memutar lagu dari Heap (Tertinggi dulu) dan menyimpan ke Stack (riwayat)
-    print("\n[+] Memutar lagu berdasarkan prioritas tertinggi...")
-    while prioritas_putar_heap.peek() is not None:
-        teratas = prioritas_putar_heap.extract_max()
-        lagu_diputar = teratas['lagu']
-        print(f"🎵 Sedang memutar: {lagu_diputar.judul} - {lagu_diputar.artis}")
+    while True:
+        print("\n" + "=" * 45)
+        print("      SISTEM SIMULASI STREAMING MUSIK")
+        print("=" * 45)
+        print("1. Tambah Lagu Baru ke Katalog (BST)")
+        print("2. Lihat Semua Katalog Lagu (Urut A-Z)")
+        print("3. Request Pemutaran Lagu (Masuk Queue)")
+        print("4. Proses Antrean ke Sistem Prioritas (Heap)")  
+        print("5. Putar Lagu Berdasarkan Prioritas Tertinggi")
+        print("6. Cek Status Semua Antrean & Heap")
+        print("7. Lihat Riwayat Pemutaran Lagu (History)")
+        print("8. Kembalikan ke Lagu Sebelumnya (Undo/Previous)")
+        print("9. Keluar Aplikasi")
+        print("=" * 45)
         
-        riwayat_stack.push(lagu_diputar)
+        pilihan = input("Pilih menu (1-9): ").strip()
 
-    # 6. Menampilkan Riwayat & Fitur Undo
-    print("\n[+] Cek Riwayat Pemutaran:")
-    riwayat_stack.display()
+        if pilihan == "1":
+            print("\n--- TAMBAH LAGU BARU ---")
+            id_lagu = input("Masukkan ID Lagu : ").strip()
+            judul = input("Masukkan Judul   : ").strip()
+            artis = input("Masukkan Artis   : ").strip()
+            album = input("Masukkan Album   : ").strip()
+            genre = input("Masukkan Genre   : ").strip()
+            durasi = input("Masukkan Durasi  : ").strip()
+            app.tambah_lagu_ke_katalog(id_lagu, judul, artis, album, genre, durasi)
 
-    print("\n[+] User menekan tombol 'Previous' (Undo)...")
-    lagu_sebelumnya = riwayat_stack.pop()
-    if lagu_sebelumnya:
-        print(f"Kembali ke lagu : {lagu_sebelumnya.judul}")
+        elif pilihan == "2":
+            app.tampilkan_katalog()
+
+        elif pilihan == "3":
+            print("\n--- REQUEST PEMUTARAN LAGU ---")
+            judul = input("Masukkan Judul Lagu yang ingin diputar: ").strip()
+            app.request_putar_lagu(judul)
+
+        elif pilihan == "4":
+            print("\n--- MEMPROSES ANTREAN REQUEST ---")
+            app.proses_antrean_ke_heap()  
+
+        elif pilihan == "5":
+            print("\n--- PEMUTARAN LAGU TERTINGGI ---")
+            app.putar_lagu_teratas()
+
+        elif pilihan == "6":
+            print("\n--- STATUS ANTREAN & HEAP ---")
+            app.tampilkan_antrean()
+            app.tampilkan_prioritas()
+
+        elif pilihan == "7":
+            print("\n--- RIWAYAT PEMUTARAN (STACK) ---")
+            app.tampilkan_riwayat()
+
+        elif pilihan == "8":
+            print("\n--- FITUR UNDO / PREVIOUS ---")
+            app.undo_pemutaran()
+
+        elif pilihan == "9":
+            print("\nTerima kasih!")
+            break
+        else:
+            print("\nPilihan tidak valid!")
