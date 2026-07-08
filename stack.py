@@ -28,16 +28,27 @@ class Stack:
             print("History kosong, tidak ada lagu sebelumnya")
             return None
         
+        if self.top.next is None:
+            return self.top.lagu
+        lagu_sebelumnya = self.top.next.lagu
+
         popped_node = self.top
         self.top = self.top.next
         self.size -= 1
         return popped_node.lagu
-    
+
+        return lagu_sebelumnya
+
     def peek(self):
         if self.is_empty():
             return None
         return self.top.lagu
-    
+
+    def get_previous(self):
+        if self.is_empty() or self.top.next is None:
+            return None
+        return self.top.next.lagu
+
     def display(self):
         if self.is_empty():
             print("History pemutaran kosong.")
